@@ -1,0 +1,57 @@
+table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+
+}
+.topDiv{
+    width: 95%;
+    margin: auto;
+}
+
+thead {
+    background-color: darkgray;
+    color: white;
+}
+
+thead th, tbody td {
+    padding: 10px;
+}
+
+tbody tr:nth-child(even) {
+    background-color: lightgray;
+}
+.new_task_btn{
+    float: right;
+    margin-top: 15px;
+}
+.fa{
+    margin-right: 10px;
+}
+
+/*.modal {*/
+/*    display: none;*/
+/*    position: fixed;*/
+/*    top: 0;*/
+/*    left: 0;*/
+/*    width: 100%;*/
+/*    height: 100%;*/
+/*    background-color: rgba(0, 0, 0, 0.5);*/
+/*}*/
+
+/*.modal-content {*/
+/*    position: absolute;*/
+/*    top: 50%;*/
+/*    left: 50%;*/
+/*    transform: translate(-50%, -50%);*/
+/*    background-color: white;*/
+/*    padding: 20px;*/
+/*}*/
+
+.close {
+    position: absolute;
+    top: 0;
+    right: 0;
+    padding: 10px;
+    cursor: pointer;
+}
