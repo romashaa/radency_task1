@@ -3,8 +3,21 @@ const categories =[
     "Task",
     "Idea"
 ]
+const notes = [
+    { name: "Note 1", date: "2023-07-29", category: categories[0], content: "Content 2023-05-12 of Note 1 vsdvsd 2022-04-15",archived: false },
+    { name: "Note 2", date: "2023-07-30", category: categories[2], content: "Content of Note 2",  archived: false },
+    { name: "Note 3", date: "2023-07-31", category: categories[1], content: "Content of Note 3",  archived: false },
+    { name: "Note 4", date: "2023-08-01", category: categories[0], content: "Content of Note 4",  archived: false },
+    { name: "Note 5", date: "2023-08-02", category: categories[1], content: "2012-03-25 Content of Note 5", archived: false }
+];
 
 const selectElement = document.getElementById('taskCategory');
+const archiveTable = document.querySelector("#archiveDiv");
+const newNoteButton = document.querySelector("#newNoteButton");
+const modal = document.querySelector("#modal");
+const closeButton = document.querySelector(".close");
+const saveNoteButton = document.querySelector("#saveNoteButton");
+const errorMessage = document.querySelector("#error-message");
 
 categories.forEach((option) => {
     const optionElement = document.createElement('option');
@@ -13,16 +26,6 @@ categories.forEach((option) => {
     selectElement.appendChild(optionElement);
 });
 
-
-const notes = [
-    { name: "Note 1", date: "2023-07-29", category: categories[0], content: "Content of Note 1", dates:"32532", archived: false },
-    { name: "Note 2", date: "2023-07-30", category: categories[2], content: "Content of Note 2", dates:"32532", archived: false },
-    { name: "Note 3", date: "2023-07-31", category: categories[1], content: "Content of Note 3", dates:"32532", archived: false },
-    { name: "Note 4", date: "2023-08-01", category: categories[0], content: "Content of Note 4", dates:"32532", archived: false },
-    { name: "Note 5", date: "2023-08-02", category: categories[1], content: "Content of Note 5", dates:"32532", archived: false }
-];
-// const archivedNotes = [];
-const archiveTable = document.querySelector("#archiveDiv");
 function viewArchive(){
     archiveTable.style.display="block";
 }
@@ -55,7 +58,7 @@ function populateArchivedTable() {
             <td>${note.date}</td>
             <td>${note.category}</td>
             <td>${note.content}</td>
-            <td></td>
+            <td>${extractDatesFromContent(note.content).join(", ")}</td>
             <td>
                 <i onclick="unarchiveRow(${index})" class="fa fa-undo" aria-hidden="true"></i>
             </td>
@@ -64,7 +67,16 @@ function populateArchivedTable() {
         }
     });
 }
-/////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+function extractDatesFromContent(content) {
+    // Regular expression to match dates in the format "YYYY-MM-DD"
+    const dateRegex = /\d{4}-\d{2}-\d{2}/g;
+    const dates = content.match(dateRegex);
+    return dates ? dates : [];
+}
+
 function populateTable() {
     const tbody = document.querySelector("#notesTable tbody");
     tbody.innerHTML = "";
@@ -77,7 +89,7 @@ function populateTable() {
               <td>${note.date}</td>
               <td>${note.category}</td>
               <td>${note.content}</td>
-              <td>${note.dates}</td>
+              <td>${extractDatesFromContent(note.content).join(", ")}</td>
               <td>
                   <i data-toggle="modal" data-target="#modal" onclick="editRow(${index})" class="fa fa-pencil" aria-hidden="true"></i>
                   <i onclick="archiveRow(${index})" class="fa fa-archive" aria-hidden="true"></i>
@@ -88,35 +100,52 @@ function populateTable() {
         }
     });
 }
-/////////////////////////////////////////////////////
+function addNote(){
+    const name = document.querySelector("#taskName").value;
+    const date = document.querySelector("#taskDate").value;
+    const category = document.querySelector("#taskCategory").value;
+    const content = document.querySelector("#taskContent").value;
+    if (name && date && category && content) {
+        const newNote = { name, date, category, content };
+        if (currentNoteIndex !== null) {
+            // If currentNoteIndex is not null, it means we are editing an existing note
+            notes[currentNoteIndex] = newNote;
+        } else {
+            // Otherwise, we are creating a new note
+            notes.push(newNote);
+        }
+        populateTable();
+        clearFormFields();
+        updateCategoriesTable();
+        modal.style.display = 'none';
+        modal.classList.remove('show');
+        let modalBackdrop = document.querySelector('.modal-backdrop');
+        modalBackdrop.style.display = 'none';
+        document.body.style.overflow = "auto";
+    } else{
+        errorMessage.style.display = "block";
+    }
+}
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 const editButtons = document.querySelectorAll(".fa-pencil");
 editButtons.forEach((editButton, index) => {
     editButton.onclick = () => editRow(index);
 });
-///////////////////////////////////////////////////////////
-const newNoteButton = document.querySelector("#newNoteButton");
-const modal = document.querySelector("#modal");
-const closeButton = document.querySelector(".close");
-const saveNoteButton = document.querySelector("#saveNoteButton");
-const errorMessage = document.querySelector("#error-message");
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+function deleteRow(index) {
+    notes.splice(index, 1);
+    populateTable();
+    updateCategoriesTable();
+}
 
-
-    function deleteRow(index) {
-        notes.splice(index, 1);
-        populateTable();
-        updateCategoriesTable();
-    }
-
-    /////////////////////////////////////////////////////////
-    function clearFormFields() {
-        document.querySelector("#taskName").value = "";
-        document.querySelector("#taskDate").value = "";
-        document.querySelector("#taskCategory").value = "";
-        document.querySelector("#taskContent").value = "";
-    }
-    //////////////////////////////////////////////////////////
-let currentNoteIndex = null;
-///////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+function clearFormFields() {
+    document.querySelector("#taskName").value = "";
+    document.querySelector("#taskDate").value = "";
+    document.querySelector("#taskCategory").value = "";
+    document.querySelector("#taskContent").value = "";
+}
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////let currentNoteIndex = null;
 function editRow(index) {
     console.log("fsdf")
     currentNoteIndex = index;
@@ -128,52 +157,25 @@ function editRow(index) {
     modal.style.display = "block";
 }
 
+saveNoteButton.addEventListener("click", addNote);
+
+newNoteButton.addEventListener("click", () => {
+    currentNoteIndex = null;
+    modal.style.display = "block";
+    errorMessage.style.display = "none";
+});
+
+closeButton.addEventListener("click", () => {
+    modal.style.display = "none";
+    errorMessage.style.display = "none";
+    document.body.style.overflow = "auto";
+});
 
 
-    newNoteButton.addEventListener("click", () => {
-        currentNoteIndex = null;
-        modal.style.display = "block";
-        errorMessage.style.display = "none";
-    });
-
-    closeButton.addEventListener("click", () => {
-        modal.style.display = "none";
-        errorMessage.style.display = "none";
-        document.body.style.overflow = "auto";
-    });
-
-    saveNoteButton.addEventListener("click", () => {
-        const name = document.querySelector("#taskName").value;
-        const date = document.querySelector("#taskDate").value;
-        const category = document.querySelector("#taskCategory").value;
-        const content = document.querySelector("#taskContent").value;
-
-        if (name && date && category && content) {
-            const newNote = { name, date, category, content };
-            if (currentNoteIndex !== null) {
-                // If currentNoteIndex is not null, it means we are editing an existing note
-                notes[currentNoteIndex] = newNote;
-            } else {
-                // Otherwise, we are creating a new note
-                notes.push(newNote);
-            }
-            populateTable();
-            clearFormFields();
-            updateCategoriesTable();
-            modal.style.display = 'none';
-            modal.classList.remove('show');
-            let modalBackdrop = document.querySelector('.modal-backdrop');
-            modalBackdrop.style.display = 'none';
-            document.body.style.overflow = "auto";
-        } else{
-            errorMessage.style.display = "block";
-        }
-    });
 
 function updateCategoriesTable() {
     const categoriesTable = document.querySelector("#categoriesTable");
     const categories = {};
-
     notes.forEach((note) => {
         if (!note.archived) {
             if (!categories[note.category]) {
@@ -195,7 +197,6 @@ function updateCategoriesTable() {
             }
         }
     });
-
     // Clear the existing rows in the table body
     const tbody = categoriesTable.querySelector("tbody");
     tbody.innerHTML = "";
@@ -211,7 +212,6 @@ function updateCategoriesTable() {
         tbody.appendChild(row);
     });
 }
-
 document.addEventListener("DOMContentLoaded", () => {
     populateTable();
     populateArchivedTable();
