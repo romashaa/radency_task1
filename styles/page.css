@@ -1,10 +1,26 @@
-table {
+.myTable {
     width: 100%;
-    border-collapse: separate;
-    border-spacing: 0;
+    background-color: white;
+    border-spacing: 0 10px;
+    border-collapse: unset;
+}
+body{
+    overflow: auto;
+}
+
+.topDiv{
+    width: 95%;
+    margin: auto;
+}
+#archiveDiv{
+    margin: auto;
+    width: 95%;
+    padding-bottom: 40px;
+    padding-top: 40px;
+    display: none;
 
 }
-.topDiv{
+.bottomDiv{
     width: 95%;
     margin: auto;
 }
@@ -14,39 +30,31 @@ thead {
     color: white;
 }
 
-thead th, tbody td {
-    padding: 10px;
-}
-
-tbody tr:nth-child(even) {
+ tbody tr {
     background-color: lightgray;
-}
+ }
+ th,td{
+     border: none;
+     padding:10px;
+ }
+
 .new_task_btn{
     float: right;
     margin-top: 15px;
+    margin-bottom: 50px;
+}
+.view_archive_btn{
+    float: right;
+    margin-top: 15px;
+    margin-bottom: 50px;
+    margin-right: 10px;
 }
 .fa{
     margin-right: 10px;
 }
-
-/*.modal {*/
-/*    display: none;*/
-/*    position: fixed;*/
-/*    top: 0;*/
-/*    left: 0;*/
-/*    width: 100%;*/
-/*    height: 100%;*/
-/*    background-color: rgba(0, 0, 0, 0.5);*/
-/*}*/
-
-/*.modal-content {*/
-/*    position: absolute;*/
-/*    top: 50%;*/
-/*    left: 50%;*/
-/*    transform: translate(-50%, -50%);*/
-/*    background-color: white;*/
-/*    padding: 20px;*/
-/*}*/
+#modal{
+    position: fixed;
+}
 
 .close {
     position: absolute;
