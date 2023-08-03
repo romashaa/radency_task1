@@ -19,12 +19,13 @@ const closeButton = document.querySelector(".close");
 const saveNoteButton = document.querySelector("#saveNoteButton");
 const errorMessage = document.querySelector("#error-message");
 
-categories.forEach((option) => {
+const optionElements = categories.map((option) => {
     const optionElement = document.createElement('option');
     optionElement.text = option;
     optionElement.value = option;
-    selectElement.appendChild(optionElement);
+    return optionElement;
 });
+selectElement.append(...optionElements);
 
 function viewArchive(){
     archiveTable.style.display="block";
@@ -68,15 +69,17 @@ function populateArchivedTable() {
     });
 }
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
 function extractDatesFromContent(content) {
-    // Regular expression to match dates in the format "YYYY-MM-DD"
-    const dateRegex = /\d{4}-\d{2}-\d{2}/g;
-    const dates = content.match(dateRegex);
-    return dates ? dates : [];
+    try {
+        const dateRegex = /\d{4}-\d{2}-\d{2}/g;
+        const dates = content.match(dateRegex);
+        return dates ? dates : [];
+    } catch (error) {
+        // Handle the error, e.g., logging or showing a user-friendly message
+        console.error("Error parsing dates from content:", error);
+        return [];
+    }
 }
-
 function populateTable() {
     const tbody = document.querySelector("#notesTable tbody");
     tbody.innerHTML = "";
